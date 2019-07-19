@@ -40,8 +40,8 @@ public class WordNet {
             Word w = new Word(words[1], words[2]);
             st.put(Integer.valueOf(words[0]), w);   
          }
-        for (Integer s : st.keys())
-            StdOut.println(s + " " + st.get(s).synset);
+        //for (Integer s : st.keys())
+        //    StdOut.println(s + " " + st.get(s).synset);
 
       }
       catch (IllegalArgumentException e) {
@@ -50,6 +50,19 @@ public class WordNet {
 
       try {
          hyper = new In(hypernyms);
+         while (!hyper.isEmpty()) {
+            String line = hyper.readLine();
+            String[] vals = line.split(",");
+            Word w = st.get(Integer.valueOf(vals[0]));
+            for (int i = 1; i < vals.length; i++)
+               w.hypernyms.add(Integer.valueOf(vals[i]));
+         }
+         //for (Integer s : st.keys()) {
+         //   StdOut.print(s + " "); 
+         //   for (Integer j : st.get(s).hypernyms)
+         //      StdOut.print(j + " ");
+         //   StdOut.println();
+         //}
       }
       catch (IllegalArgumentException e) {
             System.out.println(e);
