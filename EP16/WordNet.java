@@ -9,6 +9,7 @@ public class WordNet {
    String[] aff = new String[82192];
 
    public int binarySearch (String word) {
+      if (word == null) throw new IllegalArgumentException("palavra é null");
       return binarySearch (word, 0, 82192 - 1);
    }
 
@@ -24,6 +25,7 @@ public class WordNet {
 
    // constructor takes the name of the two input files
    public WordNet(String synsets, String hypernyms) {
+      if (synsets == null || hypernyms == null) throw new IllegalArgumentException("ao menos um dos arquvios é null");
       In syn;
       In hyper;
 
@@ -72,12 +74,15 @@ public class WordNet {
 
    // is the word a WordNet noun?
    public boolean isNoun(String word) {
+      if (word == null) throw new IllegalArgumentException("palavra é null");
       return binarySearch(word) >= 0;
    }
 
    // a synset (second field of synsets.txt) that is a shortest common ancestor
    // of noun1 and noun2 (defined below)
    public String sca(String noun1, String noun2) {
+      if (noun1 == null || noun2 == null) throw new IllegalArgumentException("palavra é null");
+      if (!isNoun(noun1) || !isNoun(noun2)) throw new IllegalArgumentException("ao menos uma das palavras não pertence ao WordNet");
       Integer int1 = binarySearch(noun1);
       Integer int2 = binarySearch(noun2);
       int s = int1;
@@ -97,6 +102,8 @@ public class WordNet {
 
    // distance between noun1 and noun2 (defined below)
    public int distance(String noun1, String noun2) {
+      if (noun1 == null || noun2 == null) throw new IllegalArgumentException("ao menos uma das palavras é null");
+      if (!isNoun(noun1) || !isNoun(noun2)) throw new IllegalArgumentException("ao menos uma das palavras não pertence ao WordNet");
       Integer int1 = binarySearch(noun1);
       Integer int2 = binarySearch(noun2);
       BreadthFirstDirectedPaths bfs = new BreadthFirstDirectedPaths(G, int1);
