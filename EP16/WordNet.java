@@ -5,14 +5,21 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 
 public class WordNet {
-   ST<String, Integer> st = new ST<String, Integer>();
    Digraph G;
+   String[] aff = new String[82192];
 
-   // classe para guardar o valor lido de synsets
-   public class Word {
-      String synset;
-      String gloss;
+   public int binarySearch (String word) {
+      return binarySearch (word, 0, 82192 - 1);
+   }
 
+   private int binarySearch (String word, int low, int high) {
+      int mid, cmp;
+      if (low > high)   return -1;
+      mid = (low + high) / 2;
+      cmp = word.compareTo(aff[mid]);
+      if (cmp == 0)  return mid;
+      if (cmp < 0)   return binarySearch(word, low, mid -1);
+      else              return binarySearch(word, mid + 1, high);
    }
 
    // constructor takes the name of the two input files
@@ -22,13 +29,13 @@ public class WordNet {
 
       try {
          syn = new In(synsets);
+         int k = 0;
          while (!syn.isEmpty()) {
             String line = syn.readLine();
             String[] words = line.split(",");
-            st.put(words[1], Integer.valueOf(words[0]));   
+            aff[k] = words[1];
+            k += 1; 
          }
-        //for (Integer s : st.keys())
-        //    StdOut.println(s + " " + st.get(s).synset);
 
       }
       catch (IllegalArgumentException e) {
@@ -65,33 +72,33 @@ public class WordNet {
 
    // is the word a WordNet noun?
    public boolean isNoun(String word) {
-      return st.contains(word);
+      return binarySearch(word) >= 0;
    }
 
    // a synset (second field of synsets.txt) that is a shortest common ancestor
    // of noun1 and noun2 (defined below)
    public String sca(String noun1, String noun2) {
-      Integer int1 = st.get(noun1);
-      Integer int2 = st.get(noun2);
+      Integer int1 = binarySearch(noun1);
+      Integer int2 = binarySearch(noun2);
       int s = int1;
       int v = int2;
+      String result = "";
         BreadthFirstDirectedPaths bfs = new BreadthFirstDirectedPaths(G, s);
 
             if (bfs.hasPathTo(v)) {
-                StdOut.printf("%d to %d (%d):  ", s, v, bfs.distTo(v));
+                result += aff[s] + " to "  + aff[v] + "(" + bfs.distTo(v) + "):  \t\t\t";
                 for (int x : bfs.pathTo(v)) {
-                    if (x == s) StdOut.print(x);
-                    else        StdOut.print("->" + x);
+                    if (x == s) result += aff[x];
+                    else        result += "->" + aff[x];
                 }
-                StdOut.println();
             }
-      return "a";
+      return result;
    }
 
    // distance between noun1 and noun2 (defined below)
    public int distance(String noun1, String noun2) {
-      Integer int1 = st.get(noun1);
-      Integer int2 = st.get(noun2);
+      Integer int1 = binarySearch(noun1);
+      Integer int2 = binarySearch(noun2);
       BreadthFirstDirectedPaths bfs = new BreadthFirstDirectedPaths(G, int1);
       return bfs.distTo(int2);
    }
@@ -102,7 +109,7 @@ public class WordNet {
       StdOut.println("'apple' é palavra? \t\t\t" + w.isNoun("apple"));
       StdOut.println("'äpple' é palavra? \t\t\t" + w.isNoun("äpple"));
       StdOut.println("distância de 'apple' a 'orange':\t" + w.distance("apple", "orange"));
-      w.sca("apple", "orange");
+      StdOut.println(w.sca("apple", "orange"));
    }
 
 }
